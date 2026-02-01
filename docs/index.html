@@ -1,0 +1,163 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Be My Valentine 💖</title>
+
+  <style>
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+      font-family: 'Comic Sans MS', cursive;
+    }
+
+    body {
+      height: 100vh;
+      background: linear-gradient(135deg, #ffe0ec, #ffc2d1);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      overflow: hidden;
+    }
+
+    .container {
+      text-align: center;
+      background: rgba(255, 255, 255, 0.9);
+      padding: 40px 50px;
+      border-radius: 30px;
+      box-shadow: 0 20px 40px rgba(255, 77, 109, 0.25);
+      z-index: 2;
+      animation: pop 0.6s ease;
+    }
+
+    @keyframes pop {
+      from {
+        transform: scale(0.8);
+        opacity: 0;
+      }
+      to {
+        transform: scale(1);
+        opacity: 1;
+      }
+    }
+
+    h1 {
+      color: #ff4d6d;
+      margin-bottom: 30px;
+      font-size: 30px;
+    }
+
+    .buttons {
+      display: flex;
+      gap: 25px;
+      justify-content: center;
+    }
+
+    button {
+      padding: 14px 32px;
+      font-size: 18px;
+      border: none;
+      border-radius: 40px;
+      cursor: pointer;
+      background: linear-gradient(135deg, #ff4d6d, #ff85a1);
+      color: white;
+      transition: transform 0.2s, box-shadow 0.2s;
+      box-shadow: 0 8px 20px rgba(255, 77, 109, 0.4);
+    }
+
+    button:hover,
+    button:focus {
+      transform: scale(1.12);
+      box-shadow: 0 12px 25px rgba(255, 77, 109, 0.6);
+      outline: none;
+    }
+
+    .hearts {
+      position: fixed;
+      inset: 0;
+      pointer-events: none;
+      display: none;
+      z-index: 1;
+    }
+
+    .heart {
+      position: absolute;
+      bottom: -30px;
+      animation: floatUp linear forwards;
+      opacity: 0.9;
+      user-select: none;
+    }
+
+    @keyframes floatUp {
+      to {
+        transform: translateY(-120vh) scale(1.5);
+        opacity: 0;
+      }
+    }
+  </style>
+</head>
+<body>
+
+  <div class="container" id="card" role="region" aria-labelledby="valentine-heading">
+    <h1 id="valentine-heading">Soumyajit, will you be my Valentine? 💘</h1>
+    <div class="buttons">
+      <button type="button" onclick="startLove()" aria-label="Yes, accept" title="Yes 💖">Yes 💖</button>
+      <button type="button" onclick="startLove()" aria-label="Yes, accept" title="Yes 💕">Yes 💕</button>
+    </div>
+  </div>
+
+  <div class="hearts" id="hearts" aria-hidden="true"></div>
+
+  <script>
+    let loveInterval = null;
+
+    function startLove() {
+      // Prevent starting multiple intervals
+      if (loveInterval) return;
+
+      const card = document.getElementById("card");
+      const hearts = document.getElementById("hearts");
+
+      // hide the card and show hearts container
+      card.style.display = "none";
+      hearts.style.display = "block";
+
+      // start creating hearts
+      loveInterval = setInterval(createHeart, 120);
+
+      // stop generating new hearts after 12 seconds to avoid infinite timers
+      setTimeout(() => {
+        clearInterval(loveInterval);
+        loveInterval = null;
+      }, 12000);
+    }
+
+    function createHeart() {
+      const heart = document.createElement("div");
+      heart.className = "heart";
+
+      const emojis = ["💖", "💕", "💗", "💘", "💝"];
+      heart.textContent = emojis[Math.floor(Math.random() * emojis.length)];
+
+      // position horizontally across the viewport
+      heart.style.left = Math.random() * 100 + "vw";
+
+      // random duration between 2s and 5s
+      heart.style.animationDuration = (2 + Math.random() * 3) + "s";
+
+      // random font size
+      heart.style.fontSize = (18 + Math.random() * 32) + "px";
+
+      document.getElementById("hearts").appendChild(heart);
+
+      // remove the heart after it's finished animating
+      setTimeout(() => {
+        heart.remove();
+      }, 6000);
+    }
+  </script>
+
+</body>
+</html>
