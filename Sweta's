@@ -1,0 +1,135 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Be My Valentine 💖</title>
+
+  <style>
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+      font-family: 'Comic Sans MS', cursive;
+    }
+
+    body {
+      height: 100vh;
+      background: linear-gradient(135deg, #ffe0ec, #ffc2d1);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      overflow: hidden;
+    }
+
+    .container {
+      text-align: center;
+      background: rgba(255, 255, 255, 0.9);
+      padding: 40px 50px;
+      border-radius: 30px;
+      box-shadow: 0 20px 40px rgba(255, 77, 109, 0.25);
+      z-index: 2;
+      animation: pop 0.6s ease;
+    }
+
+    @keyframes pop {
+      from {
+        transform: scale(0.8);
+        opacity: 0;
+      }
+      to {
+        transform: scale(1);
+        opacity: 1;
+      }
+    }
+
+    h1 {
+      color: #ff4d6d;
+      margin-bottom: 30px;
+      font-size: 30px;
+    }
+
+    .buttons {
+      display: flex;
+      gap: 25px;
+      justify-content: center;
+    }
+
+    button {
+      padding: 14px 32px;
+      font-size: 18px;
+      border: none;
+      border-radius: 40px;
+      cursor: pointer;
+      background: linear-gradient(135deg, #ff4d6d, #ff85a1);
+      color: white;
+      transition: transform 0.2s, box-shadow 0.2s;
+      box-shadow: 0 8px 20px rgba(255, 77, 109, 0.4);
+    }
+
+    button:hover {
+      transform: scale(1.12);
+      box-shadow: 0 12px 25px rgba(255, 77, 109, 0.6);
+    }
+
+    .hearts {
+      position: fixed;
+      inset: 0;
+      pointer-events: none;
+      display: none;
+    }
+
+    .heart {
+      position: absolute;
+      bottom: -30px;
+      animation: floatUp linear forwards;
+      opacity: 0.9;
+    }
+
+    @keyframes floatUp {
+      to {
+        transform: translateY(-120vh) scale(1.5);
+        opacity: 0;
+      }
+    }
+  </style>
+</head>
+<body>
+
+  <div class="container" id="card">
+    <h1>Soumyajit, will you be my Valentine? 💘</h1>
+    <div class="buttons">
+      <button onclick="startLove()">Yes 💖</button>
+      <button onclick="startLove()">Yes 💕</button>
+    </div>
+  </div>
+
+  <div class="hearts" id="hearts"></div>
+
+  <script>
+    function startLove() {
+      document.getElementById("card").style.display = "none";
+      const hearts = document.getElementById("hearts");
+      hearts.style.display = "block";
+
+      setInterval(createHeart, 120);
+    }
+
+    function createHeart() {
+      const heart = document.createElement("div");
+      heart.className = "heart";
+
+      const emojis = ["💖", "💕", "💗", "💘", "💝"];
+      heart.innerHTML = emojis[Math.floor(Math.random() * emojis.length)];
+
+      heart.style.left = Math.random() * 100 + "vw";
+      heart.style.animationDuration = (2 + Math.random() * 3) + "s";
+      heart.style.fontSize = (18 + Math.random() * 32) + "px";
+
+      document.getElementById("hearts").appendChild(heart);
+
+      setTimeout(() => heart.remove(), 6000);
+    }
+  </script>
+
+</body>
+</html>
