@@ -6,96 +6,29 @@
   <title>Be My Valentine 💖</title>
 
   <style>
-    * {
-      margin: 0;
-      padding: 0;
-      box-sizing: border-box;
-      font-family: 'Comic Sans MS', cursive;
-    }
+    * { margin: 0; padding: 0; box-sizing: border-box; font-family: 'Comic Sans MS', cursive; }
+    body { min-height: 100vh; background: linear-gradient(135deg, #ffe0ec, #ffc2d1); display: flex; align-items: center; justify-content: center; overflow: hidden; }
+    .container { text-align: center; background: rgba(255,255,255,0.95); padding: 40px 50px; border-radius: 30px; box-shadow: 0 20px 40px rgba(255,77,109,0.25); z-index: 3; animation: pop 0.6s ease; }
+    @keyframes pop { from { transform: scale(0.8); opacity: 0 } to { transform: scale(1); opacity: 1 } }
+    h1 { color: #ff4d6d; margin-bottom: 30px; font-size: 30px; }
+    .buttons { display:flex; gap:25px; justify-content:center; }
+    button { padding: 14px 32px; font-size: 18px; border: none; border-radius: 40px; cursor: pointer; background: linear-gradient(135deg,#ff4d6d,#ff85a1); color:white; transition: transform .2s, box-shadow .2s; box-shadow: 0 8px 20px rgba(255,77,109,0.4); }
+    button:hover, button:focus { transform: scale(1.12); box-shadow: 0 12px 25px rgba(255,77,109,0.6); outline: none; }
+    .hearts { position: fixed; inset: 0; pointer-events: none; display: none; z-index: 2; }
+    .heart { position: absolute; bottom: -30px; animation: floatUp linear forwards; opacity: 0.9; user-select: none; }
+    @keyframes floatUp { to { transform: translateY(-120vh) scale(1.5); opacity: 0 } }
 
-    body {
-      height: 100vh;
-      background: linear-gradient(135deg, #ffe0ec, #ffc2d1);
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      overflow: hidden;
-    }
+    /* Reveal overlay and heart-shaped image */
+    .reveal { position: fixed; inset: 0; display: none; align-items: center; justify-content: center; z-index: 4; pointer-events: none; }
+    .reveal-inner { position: relative; width: min(80vw, 520px); display: flex; flex-direction: column; align-items: center; gap: 16px; pointer-events: auto; }
 
-    .container {
-      text-align: center;
-      background: rgba(255, 255, 255, 0.9);
-      padding: 40px 50px;
-      border-radius: 30px;
-      box-shadow: 0 20px 40px rgba(255, 77, 109, 0.25);
-      z-index: 2;
-      animation: pop 0.6s ease;
-    }
+    /* Responsive SVG that uses a clipPath to shape the image as a heart */
+    .heart-svg { width: 100%; height: auto; display: block; }
 
-    @keyframes pop {
-      from {
-        transform: scale(0.8);
-        opacity: 0;
-      }
-      to {
-        transform: scale(1);
-        opacity: 1;
-      }
-    }
-
-    h1 {
-      color: #ff4d6d;
-      margin-bottom: 30px;
-      font-size: 30px;
-    }
-
-    .buttons {
-      display: flex;
-      gap: 25px;
-      justify-content: center;
-    }
-
-    button {
-      padding: 14px 32px;
-      font-size: 18px;
-      border: none;
-      border-radius: 40px;
-      cursor: pointer;
-      background: linear-gradient(135deg, #ff4d6d, #ff85a1);
-      color: white;
-      transition: transform 0.2s, box-shadow 0.2s;
-      box-shadow: 0 8px 20px rgba(255, 77, 109, 0.4);
-    }
-
-    button:hover,
-    button:focus {
-      transform: scale(1.12);
-      box-shadow: 0 12px 25px rgba(255, 77, 109, 0.6);
-      outline: none;
-    }
-
-    .hearts {
-      position: fixed;
-      inset: 0;
-      pointer-events: none;
-      display: none;
-      z-index: 1;
-    }
-
-    .heart {
-      position: absolute;
-      bottom: -30px;
-      animation: floatUp linear forwards;
-      opacity: 0.9;
-      user-select: none;
-    }
-
-    @keyframes floatUp {
-      to {
-        transform: translateY(-120vh) scale(1.5);
-        opacity: 0;
-      }
-    }
+    /* Caption styling */
+    .caption { font-size: 28px; color: #ff4d6d; background: rgba(255,255,255,0.95); padding: 10px 18px; border-radius: 999px; box-shadow: 0 8px 20px rgba(255,77,109,0.18); transform: translateY(12px); opacity: 0; transition: transform .6s ease .1s, opacity .6s ease .1s; }
+    .reveal.show .caption { transform: translateY(0); opacity: 1; }
+    .reveal img.fallback { display: none; }
   </style>
 </head>
 <body>
@@ -110,52 +43,68 @@
 
   <div class="hearts" id="hearts" aria-hidden="true"></div>
 
+  <!-- Reveal overlay: will show uploaded image clipped to a heart and caption -->
+  <div class="reveal" id="reveal">
+    <div class="reveal-inner" role="dialog" aria-label="Valentine picture">
+
+      <!-- Inline SVG: image is displayed and clipped to a heart-shaped path -->
+      <svg class="heart-svg" viewBox="0 0 100 100" preserveAspectRatio="xMidYMid meet" aria-hidden="true">
+        <defs>
+          <clipPath id="heartClip">
+            <!-- Heart path in user space coordinates -->
+            <path d="M50 15 C35 0 0 25 50 70 C100 25 65 0 50 15 Z" />
+          </clipPath>
+        </defs>
+        <!-- Use the uploaded image (docs/sunu.jpg) as the image source -->
+        <image href="sunu.jpg" x="0" y="0" width="100" height="100" preserveAspectRatio="xMidYMid slice" clip-path="url(#heartClip)"></image>
+      </svg>
+
+      <!-- Fallback img element in case SVG image linking fails in some environments -->
+      <img class="fallback" id="sunuFallback" src="sunu.jpg" alt="Sunu" style="max-width:80%; border-radius:16px; box-shadow:0 12px 30px rgba(0,0,0,0.25); display:none;" />
+
+      <div class="caption" id="captionText">I love you Sunu</div>
+    </div>
+  </div>
+
   <script>
     let loveInterval = null;
 
     function startLove() {
-      // Prevent starting multiple intervals
       if (loveInterval) return;
-
       const card = document.getElementById("card");
       const hearts = document.getElementById("hearts");
+      const reveal = document.getElementById("reveal");
+      const caption = document.getElementById("captionText");
+      const fallback = document.getElementById("sunuFallback");
 
-      // hide the card and show hearts container
       card.style.display = "none";
       hearts.style.display = "block";
 
-      // start creating hearts
-      loveInterval = setInterval(createHeart, 120);
+      // show reveal overlay and trigger transitions
+      reveal.style.display = "flex";
+      requestAnimationFrame(() => reveal.classList.add("show"));
 
-      // stop generating new hearts after 12 seconds to avoid infinite timers
-      setTimeout(() => {
-        clearInterval(loveInterval);
-        loveInterval = null;
-      }, 12000);
+      loveInterval = setInterval(createHeart, 120);
+      setTimeout(() => { clearInterval(loveInterval); loveInterval = null; }, 12000);
+
+      // If the SVG <image> fails to load, show the fallback img and keep caption
+      // We attempt to detect failure by creating an Image and testing load/error
+      const imgTest = new Image();
+      imgTest.onload = () => { /* success: do nothing, SVG will show the image */ };
+      imgTest.onerror = () => { document.querySelector('svg.heart-svg').style.display = 'none'; fallback.style.display = 'block'; };
+      imgTest.src = 'sunu.jpg';
     }
 
     function createHeart() {
       const heart = document.createElement("div");
       heart.className = "heart";
-
-      const emojis = ["💖", "💕", "💗", "💘", "💝"];
+      const emojis = ["💖", "💕", "💗", "💘", "💝"]; 
       heart.textContent = emojis[Math.floor(Math.random() * emojis.length)];
-
-      // position horizontally across the viewport
       heart.style.left = Math.random() * 100 + "vw";
-
-      // random duration between 2s and 5s
       heart.style.animationDuration = (2 + Math.random() * 3) + "s";
-
-      // random font size
       heart.style.fontSize = (18 + Math.random() * 32) + "px";
-
       document.getElementById("hearts").appendChild(heart);
-
-      // remove the heart after it's finished animating
-      setTimeout(() => {
-        heart.remove();
-      }, 6000);
+      setTimeout(() => heart.remove(), 6000);
     }
   </script>
 
