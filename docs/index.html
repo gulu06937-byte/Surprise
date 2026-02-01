@@ -10,7 +10,7 @@
     body { min-height: 100vh; background: linear-gradient(135deg, #ffe0ec, #ffc2d1); display: flex; align-items: center; justify-content: center; overflow: hidden; }
     .container { text-align: center; background: rgba(255,255,255,0.95); padding: 40px 50px; border-radius: 30px; box-shadow: 0 20px 40px rgba(255,77,109,0.25); z-index: 3; animation: pop 0.6s ease; }
     @keyframes pop { from { transform: scale(0.8); opacity: 0 } to { transform: scale(1); opacity: 1 } }
-    h1 { color: #ff4d6d; margin-bottom: 30px; font-size: 30px; }
+    h1 { color: #ff4d6d; margin-bottom: 30px; font-size: 30px; display: none; }
     .buttons { display:flex; gap:25px; justify-content:center; }
     button { padding: 14px 32px; font-size: 18px; border: none; border-radius: 40px; cursor: pointer; background: linear-gradient(135deg,#ff4d6d,#ff85a1); color:white; transition: transform .2s, box-shadow .2s; box-shadow: 0 8px 20px rgba(255,77,109,0.4); }
     button:hover, button:focus { transform: scale(1.12); box-shadow: 0 12px 25px rgba(255,77,109,0.6); outline: none; }
@@ -18,21 +18,13 @@
     .heart { position: absolute; bottom: -30px; animation: floatUp linear forwards; opacity: 0.9; user-select: none; }
     @keyframes floatUp { to { transform: translateY(-120vh) scale(1.5); opacity: 0 } }
 
-    /* Reveal overlay and heart-shaped image */
+    /* Reveal overlay and caption */
     .reveal { position: fixed; inset: 0; display: none; align-items: center; justify-content: center; z-index: 4; pointer-events: none; }
     .reveal-inner { position: relative; width: min(80vw, 520px); display: flex; flex-direction: column; align-items: center; gap: 16px; pointer-events: auto; }
 
-    /* Responsive SVG that uses a clipPath to shape the image as a heart */
-    .heart-svg { width: 100%; height: auto; display: block; }
-
     /* Caption styling */
-    .caption { font-size: 28px; color: #ff4d6d; background: rgba(255,255,255,0.95); padding: 10px 18px; border-radius: 999px; box-shadow: 0 8px 20px rgba(255,77,109,0.18); transform: translateY(12px); opacity: 0; transition: transform .6s ease .1s, opacity .6s ease .1s; }
+    .caption { font-size: 32px; color: #ff4d6d; background: rgba(255,255,255,0.95); padding: 12px 20px; border-radius: 999px; box-shadow: 0 8px 20px rgba(255,77,109,0.18); transform: translateY(12px); opacity: 0; transition: transform .6s ease .1s, opacity .6s ease .1s; }
     .reveal.show .caption { transform: translateY(0); opacity: 1; }
-    .reveal img.fallback { display: none; }
-
-    /* Name styling and popping hearts */
-    .sunu-name { font-size: clamp(32px, 6vw, 72px); color: #ff2d6d; font-weight: 800; letter-spacing: 1px; transform: scale(0.9); opacity: 0; transition: transform .45s cubic-bezier(.2,.9,.2,1), opacity .45s; }
-    .reveal.show .sunu-name { transform: scale(1); opacity: 1; }
 
     .pop-heart { position: absolute; font-size: 20px; pointer-events: none; will-change: transform, opacity; animation: popHeart 700ms cubic-bezier(.2,.9,.2,1) forwards; }
     @keyframes popHeart { 0% { transform: translateY(0) scale(0.6); opacity: 1 } 100% { transform: translateY(-48px) scale(1.6) rotate(-10deg); opacity: 0 } }
@@ -41,7 +33,7 @@
 <body>
 
   <div class="container" id="card" role="region" aria-labelledby="valentine-heading">
-    <h1 id="valentine-heading">Soumyajit, will you be my Valentine? 💘</h1>
+    <h1 id="valentine-heading" style="display:none;">Soumyajit, will you be my Valentine? 💘</h1>
     <div class="buttons">
       <button type="button" onclick="startLove()" aria-label="Yes, accept" title="Yes 💖">Yes 💖</button>
       <button type="button" onclick="startLove()" aria-label="Yes, accept" title="Yes 💕">Yes 💕</button>
@@ -50,30 +42,11 @@
 
   <div class="hearts" id="hearts" aria-hidden="true"></div>
 
-  <!-- Reveal overlay: will show uploaded image clipped to a heart and caption -->
+  <!-- Reveal overlay: no image, only caption -->
   <div class="reveal" id="reveal">
-    <div class="reveal-inner" role="dialog" aria-label="Valentine picture">
+    <div class="reveal-inner" role="dialog" aria-label="Valentine reveal">
 
-      <!-- Inline SVG: image is displayed and clipped to a heart-shaped path -->
-      <svg class="heart-svg" viewBox="0 0 100 100" preserveAspectRatio="xMidYMid meet" aria-hidden="true">
-        <defs>
-          <clipPath id="heartClip">
-            <!-- Heart path in user space coordinates -->
-            <path d="M50 15 C35 0 0 25 50 70 C100 25 65 0 50 15 Z" />
-          </clipPath>
-        </defs>
-        <!-- Use the uploaded image (docs/sunu.jpg) as the image source -->
-        <image href="sunu.jpg" x="0" y="0" width="100" height="100" preserveAspectRatio="xMidYMid slice" clip-path="url(#heartClip)"></image>
-      </svg>
-
-      <!-- Name that pops in on the second screen -->
-      <div id="nameContainer" style="position:relative; width:100%; display:flex; justify-content:center;">
-        <div class="sunu-name" id="sunuName">Sunu❤️</div>
-      </div>
-
-      <!-- Fallback img element in case SVG image linking fails in some environments -->
-      <img class="fallback" id="sunuFallback" src="sunu.jpg" alt="Sunu" style="max-width:80%; border-radius:16px; box-shadow:0 12px 30px rgba(0,0,0,0.25); display:none;" />
-
+      <!-- Caption only -->
       <div class="caption" id="captionText">I love you Sunu</div>
     </div>
   </div>
@@ -87,9 +60,7 @@
       const card = document.getElementById("card");
       const hearts = document.getElementById("hearts");
       const reveal = document.getElementById("reveal");
-      const caption = document.getElementById("captionText");
-      const fallback = document.getElementById("sunuFallback");
-      const nameEl = document.getElementById('sunuName');
+      const caption = document.getElementById('captionText');
 
       card.style.display = "none";
       hearts.style.display = "block";
@@ -98,10 +69,9 @@
       reveal.style.display = "flex";
       requestAnimationFrame(() => reveal.classList.add("show"));
 
-      // pop the large name once (CSS handles smooth scale)
-      // and start quick popping hearts around the name
-      popNameHearts();
-      popInterval = setInterval(popNameHearts, 350);
+      // pop small hearts around the caption area
+      popCaptionHearts();
+      popInterval = setInterval(popCaptionHearts, 350);
 
       // start creating floating hearts
       loveInterval = setInterval(createHeart, 120);
@@ -117,20 +87,16 @@
         clearInterval(popInterval);
         popInterval = null;
       }, 3000);
-
-      // If the SVG <image> fails to load, show the fallback img and keep caption
-      const imgTest = new Image();
-      imgTest.onload = () => { /* success: do nothing, SVG will show the image */ };
-      imgTest.onerror = () => { document.querySelector('svg.heart-svg').style.display = 'none'; fallback.style.display = 'block'; };
-      imgTest.src = 'sunu.jpg';
     }
 
-    function popNameHearts() {
+    function popCaptionHearts() {
       const container = document.querySelector('.reveal-inner');
       if (!container) return;
-      const rect = container.getBoundingClientRect();
-      const centerX = rect.width / 2;
-      const topY =  rect.height * 0.35;
+      const caption = document.getElementById('captionText');
+      const rect = caption.getBoundingClientRect();
+      const parentRect = container.getBoundingClientRect();
+      const centerX = rect.left - parentRect.left + rect.width/2;
+      const topY = rect.top - parentRect.top + rect.height/2 - 8;
 
       const count = 6;
       for (let i = 0; i < count; i++) {
@@ -138,12 +104,10 @@
         ph.className = 'pop-heart';
         const emojis = ['💖','💕','💗','💘','💝'];
         ph.textContent = emojis[Math.floor(Math.random()*emojis.length)];
-        // random horizontal offset around center
-        const offset = (Math.random() - 0.5) * (rect.width * 0.5);
+        const offset = (Math.random() - 0.5) * (rect.width * 0.8);
         ph.style.left = (centerX + offset) + 'px';
         ph.style.top = (topY + (Math.random()-0.5)*20) + 'px';
         container.appendChild(ph);
-        // remove after animation
         setTimeout(() => ph.remove(), 800);
       }
     }
